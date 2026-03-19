@@ -1,24 +1,25 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { Stack } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
-import 'react-native-reanimated';
-
-import { useColorScheme } from '@/hooks/use-color-scheme';
-
-export const unstable_settings = {
-  anchor: '(tabs)',
-};
+import {Stack} from "expo-router";
+import {colors} from "@/styles";
+import {useFonts} from "expo-font";
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
-
-  return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
-      </Stack>
-      <StatusBar style="auto" />
-    </ThemeProvider>
-  );
+  const [loaded, error] = useFonts({
+    'Sinacherib': require("./../assets/fonts/Sinacherib.ttf"),
+    'Andika': require("./../assets/fonts/Andika/Andika-Regular.ttf")
+  });
+  return <Stack
+    screenOptions={
+      {
+        headerStyle: {
+          backgroundColor: colors.background,
+        },
+        headerTintColor: colors.stroke,
+        headerTitleStyle: {
+          fontFamily: 'Andika'
+        },
+      }
+    }>
+    <Stack.Screen name={'index'} options={{title: 'Znaki'}}/>
+    <Stack.Screen name={'draw'} options={{title: 'Rysuj', headerBackButtonDisplayMode: 'minimal'}}/>
+  </Stack>;
 }
