@@ -1,17 +1,23 @@
 {
   "expo": {
-    "name": "datacollectorapp",
-    "slug": "datacollectorapp",
+    "name": "Cunei Collector",
+    "slug": "cuneicollector",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "datacollectorapp",
+    "scheme": "cuneicollector",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "googleServicesFile": "./GoogleService-Info.plist",
+      "supportsTablet": true,
+      "bundleIdentifier": "com.anonymous.cuneicollector",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
+      "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
         "backgroundColor": "#2A292E",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
@@ -19,13 +25,14 @@
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.anonymous.datacollectorapp"
+      "package": "com.anonymous.cuneicollector"
     },
     "web": {
       "output": "static",
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
+      "@react-native-google-signin/google-signin",
       "expo-router",
       [
         "expo-splash-screen",
@@ -38,6 +45,17 @@
             "backgroundColor": "#000000"
           }
         }
+      ],
+      "@react-native-firebase/app",
+      "@react-native-firebase/auth",
+      "@react-native-firebase/crashlytics",
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "useFrameworks": "static"
+          }
+        }
       ]
     ],
     "experiments": {
@@ -47,8 +65,9 @@
     "extra": {
       "router": {},
       "eas": {
-        "projectId": "d20f4fb1-c28a-4e5d-8f18-2d40b159047e"
+        "projectId": "77833246-3f23-4180-b4ec-4d491cec4135"
       }
-    }
+    },
+    "owner": "cheesu"
   }
 }

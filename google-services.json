@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "595139104492",
+    "project_id": "cunei-collector",
+    "storage_bucket": "cunei-collector.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:595139104492:android:b13251e275358d33aadfc9",
+        "android_client_info": {
+          "package_name": "com.anonymous.cuneicollector"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "595139104492-1kb70jf77jc52frilledci5e91gcvmc8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDXBbNBCiADPmkOnqW6mQC_sQDI9XEYPE8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "595139104492-1kb70jf77jc52frilledci5e91gcvmc8.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "595139104492-4vkj15djdt166kdk9qofmbttvuj39riu.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.anonymous.cuneicollector"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
