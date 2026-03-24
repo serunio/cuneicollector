@@ -1,20 +1,24 @@
 import React from 'react';
-import {Canvas, Path} from "@shopify/react-native-skia";
+import {Canvas, Path, SkPath} from "@shopify/react-native-skia";
 import {Gesture, GestureDetector, GestureHandlerRootView,} from 'react-native-gesture-handler';
 import {StyleSheet, View} from 'react-native';
 import {colors} from '@/styles'
+import {SharedValue} from "react-native-reanimated";
 
-export default function Tablet({path, setPath}:{path:string, setPath:React.Dispatch<React.SetStateAction<string>>}) {
+export default function Tablet({path}:{path:SharedValue<SkPath>}) {
 
   const pan = Gesture.Pan()
     .minDistance(0)
     .onStart((event) => {
-      setPath((prevState) => prevState + `M${Math.round(event.x)} ${Math.round(event.y)}`)
+      const p = path.value.copy();
+      p.moveTo(Math.round(event.x), Math.round(event.y))
+      path.value = p
     })
     .onUpdate((event) => {
-      setPath((prevState) => prevState + `L${Math.round(event.x)} ${Math.round(event.y)}`)
+      const p = path.value.copy();
+      p.lineTo(Math.round(event.x), Math.round(event.y))
+      path.value = p
     })
-    .runOnJS(true);
 
   return (
       <GestureHandlerRootView style={styles.full}>

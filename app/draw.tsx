@@ -13,7 +13,8 @@ import {useSharedValue} from "react-native-reanimated";
 import {Skia} from "@shopify/react-native-skia";
 
 export default function Draw() {
-  const [path, setPath] = useState<string>("")
+  // const [path, setPath] = useState<string>("")
+  const path = useSharedValue(Skia.Path.Make());
   const {id} = useLocalSearchParams()
   const navigation = useNavigation()
   const [cunei, setCunei] = useState<Cunei>()
@@ -73,11 +74,6 @@ export default function Draw() {
 
   return (
     <View style={styles.container}>
-      <View style={{flex: 5}}>
-        <Text size={'big'} center>{cunei?.unicode}</Text>
-      </View>
-      <View style={{flex: 20}}>
-        <Tablet path={path} setPath={setPath}/>
       {
         cunei ? <View>
           <View style={{ justifyContent: 'space-around', flexDirection: 'row', alignItems: 'center'}}>
@@ -91,10 +87,12 @@ export default function Draw() {
         </View> : <></>
       }
       <View style={{flex: 15}}>
+        <Tablet path={path} />
       </View>
       <View style={{flex: 2, flexDirection: 'row', gap: 10,}}>
-        <Button onPress={() => setPath('')} type={"secondary"} text={'Wyczyść'}/>
+        <Button onPress={() => path.value = Skia.Path.Make()} type={"secondary"} text={'Wyczyść'}/>
         <Button onPress={() => {
+          console.log(path.value.toSVGString())
         }} type={"primary"} text={'Zatwierdź'}/>
       </View>
     </View>
