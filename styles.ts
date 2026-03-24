@@ -13,5 +13,6 @@ export const fontSizes = {
   small: 12,
   regular: 17,
   header: 32,
-  big: 64
+  cuneiSmall: 32,
+  cuneiBig: 60
 }

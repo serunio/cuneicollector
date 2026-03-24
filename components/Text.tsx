@@ -3,7 +3,7 @@ import {colors, fontSizes} from "@/styles";
 import {useFonts} from "expo-font";
 
 interface TextProps extends NativeTextProps {
-  size: 'small' | 'regular' | 'header' | 'big',
+  size: 'small' | 'regular' | 'header' | 'cuneiSmall' | 'cuneiBig',
   center?: boolean
 }
 
@@ -16,8 +16,8 @@ export default function Text({children, size, center=false}:TextProps) {
     text: {
       fontSize: fontSizes[size],
       color: colors.stroke,
-      fontFamily: size === 'big' ? 'Sinacherib' : 'Andika',
-      alignSelf: center ? 'center' : 'auto'
+      fontFamily: size === 'cuneiBig' || size === 'cuneiSmall' ? 'Sinacherib' : 'Andika',
+      alignSelf: center ? 'center' : 'auto',
     }
   })
     return (<NativeText style={styles.text}>{loaded ? children : null}</NativeText>)

@@ -3,13 +3,15 @@ import {Cunei} from "@/types";
 import Text from "@/components/Text";
 import {colors} from '@/styles'
 import {Link} from "expo-router";
+import Button from "@/components/Button";
+import {api} from "@/api";
 
 export default function CuneiListElement({cunei}: { cunei: Cunei }) {
   return (
     <Link href={ {pathname: '/draw', params: {id: cunei.id}} } asChild>
       <Pressable style={styles.background}>
         <View style={{flex: 3}}>
-          <Text size={'big'} center>
+          <Text size={'cuneiSmall'} center>
             {cunei.unicode}
           </Text>
         </View>
@@ -46,3 +48,13 @@ const styles = StyleSheet.create({
     borderWidth: 2
   }
 })
+
+async function deleteCunei(cunei:Cunei) {
+  try {
+    await fetch(api + '/cunei/' + cunei.id, {method: 'DELETE'})
+    console.log(`deleted cunei ${cunei.phonetic} (id ${cunei.id})`)
+  }
+  catch (e) {
+    console.log(e)
+  }
+}
