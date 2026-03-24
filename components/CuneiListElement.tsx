@@ -1,9 +1,8 @@
-import {View, StyleSheet, Pressable} from "react-native";
+import {Pressable, StyleSheet, View} from "react-native";
 import {Cunei} from "@/types";
 import Text from "@/components/Text";
 import {colors} from '@/styles'
 import {Link} from "expo-router";
-import Button from "@/components/Button";
 import {api} from "@/api";
 
 export default function CuneiListElement({cunei}: { cunei: Cunei }) {
