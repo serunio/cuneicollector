@@ -7,7 +7,7 @@ import {api} from "@/api";
 
 export default function CuneiListElement({cunei}: { cunei: Cunei }) {
   return (
-    <Link href={ {pathname: '/draw', params: {id: cunei.id}} } asChild>
+    <Link href={ {pathname: '/draw/[id]', params: {id: cunei.id}} } asChild>
       <Pressable style={styles.background}>
         <View style={{flex: 3}}>
           <Text size={'cuneiSmall'} center>

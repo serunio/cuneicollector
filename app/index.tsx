@@ -1,10 +1,10 @@
-import List from "@/app/list";
+import {Redirect} from "expo-router";
 
 export default function Index() {
 
 
   return <>
-    <List />
-  </>;
+    <Redirect href={'/list'}/>
+  </>
 }
 

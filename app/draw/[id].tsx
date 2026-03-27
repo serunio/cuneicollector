@@ -1,9 +1,9 @@
 import React, {useEffect, useLayoutEffect, useState} from 'react';
 import {StyleSheet, View} from 'react-native';
-import Tablet from '../components/Tablet'
+import Tablet from '../../components/Tablet'
 import {colors} from '@/styles'
-import Button from '../components/Button'
-import Text from './../components/Text'
+import Button from '../../components/Button'
+import Text from '../../components/Text'
 import {useLocalSearchParams, useNavigation, router} from "expo-router";
 import {api} from '@/api'
 import {Cunei} from "@/types";

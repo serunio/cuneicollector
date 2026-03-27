@@ -1,22 +1,53 @@
 import {
   GoogleSignin,
-  GoogleSigninButton, isErrorWithCode, isSuccessResponse,
+  GoogleSigninButton,
+  isErrorWithCode,
+  isSuccessResponse,
   statusCodes,
 } from '@react-native-google-signin/google-signin';
-import {useState} from "react";
-import {Button, View} from "react-native";
+import {useContext, useState} from "react";
+import {Button, StyleSheet, View} from "react-native";
+import {colors} from "@/styles";
+import {ctxAuth} from "@/utils/AuthContext";
+import {api} from "@/api";
+import { getAuth, GoogleAuthProvider, signInWithCredential, getIdToken } from '@react-native-firebase/auth'
+import {jwtDecode} from 'jwt-decode'
+import {JWT, User} from '@/types'
 
 export default function Login() {
 
-  const [userInfo, setUserInfo] = useState({})
+  const {user, setUser} = useContext(ctxAuth)
 
-  GoogleSignin.configure();
+  if(setUser === null)
+    return <></>
+
+  GoogleSignin.configure({webClientId: process.env.EXPO_PUBLIC_WEB_CLIENT_ID});
   const signIn = async () => {
     try {
       await GoogleSignin.hasPlayServices();
       const response = await GoogleSignin.signIn();
       if (isSuccessResponse(response)) {
-        setUserInfo(response.data);
+
+
+        const auth = getAuth();
+        const credential = GoogleAuthProvider.credential(response.data.idToken);
+        const userCredential = await signInWithCredential(auth, credential);
+        const firebaseIdToken = await getIdToken(userCredential.user);
+        const res = await fetch(api + '/users/login', {
+          headers: {
+            "Authorization": "Bearer " + firebaseIdToken
+          }
+        })
+        const token = await res.text()
+        const decoded = jwtDecode<JWT>(token)
+        const user:User = {
+          admin: decoded.admin === 1,
+          name: decoded.name,
+          email: decoded.email,
+          uid: decoded.uid
+        }
+        setUser(user);
+        console.log(user)
       } else {
         // sign in was cancelled by user
       }
@@ -39,21 +70,20 @@ export default function Login() {
     }
   };
 
-  const signOut = async () => {
-    try {
-      await GoogleSignin.signOut();
-      setUserInfo({ user: null }); // Remember to remove the user from your app's state as well
-    } catch (error) {
-      console.error(error);
-    }
-  };
+
 
   return <>
-    <View>
+    <View style={styles.background}>
       <GoogleSigninButton onPress={signIn}/>
-      <Button title={"info"} onPress={() => console.log(userInfo)} />
-      <Button title={"clear"} onPress={signOut} />
     </View>
   </>;
 }
 
+const styles = StyleSheet.create({
+  background: {
+    flex: 1,
+    backgroundColor: colors.background,
+    alignItems: 'center',
+    padding: '40%'
+  }
+})
