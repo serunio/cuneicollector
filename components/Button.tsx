@@ -2,7 +2,7 @@ import {GestureResponderEvent, Pressable, StyleSheet} from "react-native";
 import {colors, fontSizes} from '@/styles'
 import Text from './Text'
 
-export type ButtonType = "primary" | "secondary"
+export type ButtonType = "primary" | "secondary" | "delete"
 type ButtonProps = {
   type: ButtonType,
   text: string,
@@ -23,6 +23,7 @@ const background = (pressed: boolean, type: ButtonType): { backgroundColor: stri
     backgroundColor:
       !pressed && type === 'primary' ? colors.primary :
       !pressed && type === 'secondary' ? colors.gray :
+      !pressed && type === 'delete' ? 'red' :
       pressed && type === 'primary' ? colors.primaryClicked :
       pressed && type === 'secondary' ? colors.grayClicked : '#fff'
   }

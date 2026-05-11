@@ -1,9 +1,10 @@
-import {StyleSheet, View, Text, Button} from "react-native";
+import {StyleSheet, View} from "react-native";
 import {colors} from "@/styles";
 import {useContext} from "react";
 import {ctxAuth} from "@/utils/AuthContext";
-import {GoogleSignin, GoogleSigninButton} from "@react-native-google-signin/google-signin";
-
+import {GoogleSignin} from "@react-native-google-signin/google-signin";
+import Button from "@/components/Button";
+import Text from '@/components/Text'
 
 export default function Account() {
   const {user, setUser} = useContext(ctxAuth)
@@ -20,29 +21,21 @@ export default function Account() {
     }
   };
 
-  const getInfo = async () => {
-    try {
-      const tokensResponse = GoogleSignin.getCurrentUser()
-      console.log('--------------------------------------------------------------------------------------------')
-      console.log(tokensResponse?.user.id)
-    }
-    catch (e) {
-      console.error(e)
-    }
-  }
-
   return <View style={styles.background}>
-    <Text>{user.name}</Text>
-    <Button title={'logout'} onPress={signOut}/>
-    <Button title={'get info'} onPress={getInfo}/>
+    <Text size={'regular'} center>{user.name}</Text>
+    <View style={{paddingHorizontal: 100}}>
+      <Button type={'delete'} text={'Logout'} onPress={signOut}/>
+    </View>
+
   </View>
 }
 
 const styles = StyleSheet.create({
   background: {
-    flex: 1,
     backgroundColor: colors.background,
-    alignItems: 'center',
-    padding: '40%'
+    width: '100%',
+    height: '100%',
+    justifyContent: 'center'
+
   }
 })

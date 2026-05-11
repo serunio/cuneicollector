@@ -5,24 +5,30 @@ import {StyleSheet, View} from 'react-native';
 import {colors} from '@/styles'
 import {SharedValue} from "react-native-reanimated";
 
-export default function Tablet({path}:{path:SharedValue<SkPath>}) {
+export default function Tablet({path, drawingEnabled = true}:{path:SharedValue<SkPath>, drawingEnabled?:boolean}) {
 
   const pan = Gesture.Pan()
     .minDistance(0)
     .onStart((event) => {
+
       const p = path.value.copy();
       p.moveTo(Math.round(event.x), Math.round(event.y))
       path.value = p
     })
     .onUpdate((event) => {
+      const {x, y} = path.value.getLastPt()
+      if (Math.abs(x-event.x) < 5 && Math.abs(y-event.y) < 5)
+        return
       const p = path.value.copy();
       p.lineTo(Math.round(event.x), Math.round(event.y))
       path.value = p
     })
 
+  const gestureDisable = Gesture.Pan();
+
   return (
       <GestureHandlerRootView style={styles.full}>
-        <GestureDetector gesture={pan}>
+        <GestureDetector gesture={drawingEnabled ? pan : gestureDisable}>
           <View key='canvas' style={styles.tablet}>
             <Canvas style={styles.full}>
               <Path

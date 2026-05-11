@@ -5,12 +5,12 @@ import {
   isSuccessResponse,
   statusCodes,
 } from '@react-native-google-signin/google-signin';
-import {useContext, useState} from "react";
-import {Button, StyleSheet, View} from "react-native";
+import {useContext} from "react";
+import {StyleSheet, View} from "react-native";
 import {colors} from "@/styles";
 import {ctxAuth} from "@/utils/AuthContext";
 import {api} from "@/api";
-import { getAuth, GoogleAuthProvider, signInWithCredential, getIdToken } from '@react-native-firebase/auth'
+import {getAuth, getIdToken, GoogleAuthProvider, signInWithCredential} from '@react-native-firebase/auth'
 import {jwtDecode} from 'jwt-decode'
 import {JWT, User} from '@/types'
 
@@ -26,13 +26,13 @@ export default function Login() {
     try {
       await GoogleSignin.hasPlayServices();
       const response = await GoogleSignin.signIn();
+
       if (isSuccessResponse(response)) {
-
-
         const auth = getAuth();
         const credential = GoogleAuthProvider.credential(response.data.idToken);
         const userCredential = await signInWithCredential(auth, credential);
         const firebaseIdToken = await getIdToken(userCredential.user);
+        await fetch(api + '/users/login')
         const res = await fetch(api + '/users/login', {
           headers: {
             "Authorization": "Bearer " + firebaseIdToken
@@ -44,14 +44,15 @@ export default function Login() {
           admin: decoded.admin === 1,
           name: decoded.name,
           email: decoded.email,
-          uid: decoded.uid
+          uid: decoded.uid,
+          token: token
         }
         setUser(user);
-        console.log(user)
       } else {
         // sign in was cancelled by user
       }
     } catch (error) {
+      console.log(error)
       if (isErrorWithCode(error)) {
         console.log(error)
         switch (error.code) {

@@ -1,4 +1,4 @@
-import React, {useEffect, useLayoutEffect, useState} from 'react';
+import React, {useContext, useEffect, useLayoutEffect, useState} from 'react';
 import {StyleSheet, View} from 'react-native';
 import Tablet from '../../components/Tablet'
 import {colors} from '@/styles'
@@ -11,6 +11,7 @@ import {Menu} from "react-native-paper";
 import {Ionicons} from "@expo/vector-icons";
 import {useSharedValue} from "react-native-reanimated";
 import {Skia} from "@shopify/react-native-skia";
+import {ctxAuth} from "@/utils/AuthContext";
 
 export default function Draw() {
   // const [path, setPath] = useState<string>("")
@@ -21,79 +22,109 @@ export default function Draw() {
 
   const [visible, setVisible] = useState(false);
 
+  const {user} = useContext(ctxAuth)
+
   const openMenu = () => setVisible(true);
 
   const closeMenu = () => setVisible(false);
 
   useLayoutEffect(() => {
-    navigation.setOptions({headerRight: () => (<Menu
+    navigation.setOptions({
+      headerRight: () => (<Menu
         visible={visible}
         onDismiss={closeMenu}
-        anchor={<Ionicons name={'ellipsis-vertical'} size={24} onPress={openMenu} style={styles.icon}/> }>
-        <Menu.Item onPress={() => {}} title="Oznacz do usunięcia" />
-        <Menu.Item onPress={() => {}} title="Dodaj komentarz" />
-      </Menu>)})
+        anchor={<Ionicons name={'ellipsis-vertical'} size={24} onPress={openMenu} style={styles.icon}/>}>
+        <Menu.Item onPress={() => {
+        }} title="Oznacz do usunięcia"/>
+        <Menu.Item onPress={() => {
+        }} title="Dodaj komentarz"/>
+      </Menu>)
+    })
   })
 
   useEffect(() => {
     fetchCunei()
   }, [id])
+
   async function fetchCunei() {
     try {
       const response = await fetch(api + '/cunei/' + id, {method: 'GET'})
       const data = await response.json()
       setCunei(data)
-    } catch(e) {
+    } catch (e) {
       console.log(e)
     }
   }
 
   async function getNext() {
-      try {
-        const response = await fetch(api + '/cunei/' + id + '/next', {method: 'GET'})
-        const data = await response.json()
-        router.setParams({id: (data.id).toString()})
-        return
-      }
-      catch (e) {
-        console.log(e)
-      }
+    try {
+      const response = await fetch(`${api}/cunei/${id}/next`, {method: 'GET'})
+      const data = await response.json()
+      router.setParams({id: (data.id).toString()})
+      return
+    } catch (e) {
+      console.log(e)
+    }
   }
 
   async function getPrevious() {
     try {
-      const response = await fetch(api + '/cunei/' + id + '/previous', {method: 'GET'})
+      const response = await fetch(`${api}/cunei/${id}/previous`, {method: 'GET'})
       const data = await response.json()
       router.setParams({id: (data.id).toString()})
       return
-    }
-    catch (e) {
+    } catch (e) {
       console.log(e)
     }
+  }
+
+  async function sendSubmission() {
+    try {
+      const bounds = path.value.getBounds()
+      path.value.offset(-bounds.x, -bounds.y)
+      console.log(path.value.toSVGString())
+      const body = {
+        cuneiId: cunei?.id,
+        submission: path.value.toSVGString()
+      }
+      const response = await fetch(`${api}/submissions`, {
+        method: 'POST',
+        headers: {
+          "Authorization": `Bearer ${user?.token}`,
+          "Content-Type": 'application/json'
+        },
+        body: JSON.stringify(body)
+      })
+      clear()
+    } catch (e) {
+      console.log(e)
+    }
+  }
+
+  function clear() {
+    path.value = Skia.Path.Make()
   }
 
   return (
     <View style={styles.container}>
       {
         cunei ? <View>
-          <View style={{ justifyContent: 'space-around', flexDirection: 'row', alignItems: 'center'}}>
-            <Ionicons onPress={getPrevious} name={'caret-back-circle' } style={styles.icon} size={24}/>
+          <View style={{justifyContent: 'space-around', flexDirection: 'row', alignItems: 'center'}}>
+            <Ionicons onPress={getPrevious} name={'caret-back-circle'} style={styles.icon} size={24}/>
             <Text size={'regular'} center>{cunei?.phonetic}</Text>
-            <Ionicons onPress={getNext} name={'caret-forward-circle' } style={styles.icon} size={24}/>
+            <Ionicons onPress={getNext} name={'caret-forward-circle'} style={styles.icon} size={24}/>
           </View>
           <View>
             <Text size={'cuneiBig'} center>{cunei?.unicode}</Text>
           </View>
-        </View> : <></>
+        </View> : <><Text size={'regular'}>error</Text></>
       }
       <View style={{flex: 15}}>
-        <Tablet path={path} />
+        <Tablet path={path}/>
       </View>
       <View style={{flex: 2, flexDirection: 'row', gap: 10,}}>
-        <Button onPress={() => path.value = Skia.Path.Make()} type={"secondary"} text={'Wyczyść'}/>
-        <Button onPress={() => {
-          console.log(path.value.toSVGString())
-        }} type={"primary"} text={'Zatwierdź'}/>
+        <Button onPress={clear} type={"secondary"} text={'Wyczyść'}/>
+        <Button onPress={sendSubmission} type={"primary"} text={'Zatwierdź'}/>
       </View>
     </View>
   );

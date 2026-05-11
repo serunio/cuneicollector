@@ -8,7 +8,7 @@ export default function TabsLayout() {
   const {user}  = useContext(ctxAuth)
   return <>
     <SafeAreaView edges={['top']} style={{flex:1, backgroundColor: colors.background}}>
-      <NativeTabs >
+      <NativeTabs labelVisibilityMode={'labeled'}>
 
         <NativeTabs.Trigger name={'list'}>
           <NativeTabs.Trigger.Label>
@@ -19,6 +19,12 @@ export default function TabsLayout() {
         <NativeTabs.Trigger hidden={!user?.admin} name={'edit'}>
           <NativeTabs.Trigger.Label>
             Edit
+          </NativeTabs.Trigger.Label>
+        </NativeTabs.Trigger>
+
+        <NativeTabs.Trigger hidden={!user?.admin} name={'submissions'}>
+          <NativeTabs.Trigger.Label>
+            Submissions
           </NativeTabs.Trigger.Label>
         </NativeTabs.Trigger>
 
