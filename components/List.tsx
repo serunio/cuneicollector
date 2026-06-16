@@ -28,20 +28,24 @@ export default function List({admin = false}) {
   const [searchQuery, setSearchQuery] = useState('');
   const {user} = useContext(ctxAuth)
   const [sort, setSort] = useState<Sort>("alphabetically")
+  const [refreshing, setRefreshing] = useState<boolean>(false)
 
   useEffect(() => {
+    
     fetchCunei()
   }, [])
 
   useEffect(() => {
+    
     const filtered = cunei.filter((c) => normalizeText(c.phonetic).includes(normalizeText(searchQuery)))
+    
     setCuneiFiltered(filtered)
   }, [searchQuery])
 
   useEffect(() => {
     const sorted = [...cuneiFiltered].sort(sortFunc[sort])
     setCuneiSorted(sorted)
-  }, [sort])
+  }, [sort, cuneiFiltered])
 
   function normalizeText(str: string) {
     return str
@@ -51,9 +55,12 @@ export default function List({admin = false}) {
   }
 
   async function fetchCunei() {
+    setRefreshing(true)
+    const endpoint = admin ? '/cunei' : '/cunei/for-user'
+    
     let response
     try {
-      response = await fetch(api + '/cunei/for-user', {
+      response = await fetch(api + endpoint, {
         headers: {
           "Authorization": `Bearer ${user?.token}`
         }
@@ -65,6 +72,7 @@ export default function List({admin = false}) {
       console.log(e)
       console.log(response)
     }
+    setRefreshing(false)
   }
 
   const sortPanel = (
@@ -88,6 +96,8 @@ export default function List({admin = false}) {
       keyExtractor={(item) => item.id.toString()}
       renderItem={({item}) => <CuneiListElement cunei={item} admin={admin}/>}
       ListHeaderComponent={sortPanel}
+      refreshing={refreshing}
+      onRefresh={fetchCunei}
     />
   </View>
 }
