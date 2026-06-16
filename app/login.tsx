@@ -15,7 +15,6 @@ import {jwtDecode} from 'jwt-decode'
 import {JWT, User} from '@/types'
 
 export default function Login() {
-
   const {user, setUser} = useContext(ctxAuth)
 
   if(setUser === null)
@@ -32,7 +31,6 @@ export default function Login() {
         const credential = GoogleAuthProvider.credential(response.data.idToken);
         const userCredential = await signInWithCredential(auth, credential);
         const firebaseIdToken = await getIdToken(userCredential.user);
-        await fetch(api + '/users/login')
         const res = await fetch(api + '/users/login', {
           headers: {
             "Authorization": "Bearer " + firebaseIdToken
