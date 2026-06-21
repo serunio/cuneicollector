@@ -1,14 +1,15 @@
-import React, {useContext, useEffect, useState} from "react";
-import {FlatList, StyleSheet, View} from "react-native";
-import {colors} from "@/styles";
-import {api} from "@/api";
-import {ctxAuth} from "@/utils/AuthContext";
-import {Canvas, Circle, Path, Points, Skia} from "@shopify/react-native-skia";
+import { api } from "@/api";
 import Text from "@/components/Text";
+import { colors } from "@/styles";
+import { ctxAuth } from "@/utils/AuthContext";
+import { Canvas, Path, Skia } from "@shopify/react-native-skia";
+import React, { useContext, useEffect, useState } from "react";
+import { FlatList, StyleSheet, View } from "react-native";
 
 type Submission = { id: number, user_id: string, data: string, unicode:string }
 export default function Submissions() {
   const [submissions, setSubmissions] = useState<Submission[]>([])
+  const [refreshing, setRefreshing] = useState<boolean>(false)
   useEffect(() => {
     fetchSubmissions()
   }, [])
@@ -16,6 +17,7 @@ export default function Submissions() {
   const {user} = useContext(ctxAuth)
 
   async function fetchSubmissions() {
+    setRefreshing(true)
     try {
       const res = await fetch(api + '/submissions', {
         method: 'GET', headers: {
@@ -27,11 +29,13 @@ export default function Submissions() {
     } catch (e) {
       console.log(e)
     }
-
+    setRefreshing(false)
   }
 
   return <View style={{backgroundColor: colors.background}}>
       <FlatList
+        refreshing={refreshing}
+        onRefresh={fetchSubmissions}
         data={submissions}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => <SubmissionItem item={item}/>}
