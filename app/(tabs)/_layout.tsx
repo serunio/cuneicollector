@@ -1,8 +1,8 @@
-import {colors} from "@/styles";
-import {NativeTabs} from "expo-router/build/native-tabs";
-import {SafeAreaView} from "react-native-safe-area-context";
-import {useContext} from "react";
-import {ctxAuth} from "@/utils/AuthContext";
+import { colors } from "@/styles";
+import { ctxAuth } from "@/utils/AuthContext";
+import { NativeTabs } from "expo-router/build/native-tabs";
+import { useContext } from "react";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function TabsLayout() {
   const {user}  = useContext(ctxAuth)
@@ -30,7 +30,7 @@ export default function TabsLayout() {
 
         <NativeTabs.Trigger name={'account'}>
           <NativeTabs.Trigger.Label>
-            Konto
+            User
           </NativeTabs.Trigger.Label>
         </NativeTabs.Trigger>
 
