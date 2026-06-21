@@ -1,17 +1,16 @@
-import React, {useContext, useEffect, useLayoutEffect, useState} from 'react';
-import {StyleSheet, View} from 'react-native';
-import Tablet from '../../components/Tablet'
-import {colors} from '@/styles'
-import Button from '../../components/Button'
-import Text from '../../components/Text'
-import {useLocalSearchParams, useNavigation, router} from "expo-router";
-import {api} from '@/api'
-import {Cunei} from "@/types";
-import {Menu} from "react-native-paper";
-import {Ionicons} from "@expo/vector-icons";
-import {useSharedValue} from "react-native-reanimated";
-import {Skia} from "@shopify/react-native-skia";
-import {ctxAuth} from "@/utils/AuthContext";
+import { api } from '@/api';
+import { colors } from '@/styles';
+import { Cunei } from "@/types";
+import { ctxAuth } from "@/utils/AuthContext";
+import { Skia } from "@shopify/react-native-skia";
+import { router, useLocalSearchParams, useNavigation } from "expo-router";
+import React, { useContext, useEffect, useLayoutEffect, useState } from 'react';
+import { StyleSheet, View } from 'react-native';
+import { Checkbox } from "react-native-paper";
+import { useSharedValue } from "react-native-reanimated";
+import Button from '../../components/Button';
+import Tablet from '../../components/Tablet';
+import Text from '../../components/Text';
 
 export default function Draw() {
   // const [path, setPath] = useState<string>("")
@@ -20,25 +19,13 @@ export default function Draw() {
   const navigation = useNavigation()
   const [cunei, setCunei] = useState<Cunei>()
 
-  const [visible, setVisible] = useState(false);
+  const [autoNext, setAutoNext] = useState<"checked" | "unchecked" | "indeterminate">('checked')
 
   const {user} = useContext(ctxAuth)
 
-  const openMenu = () => setVisible(true);
-
-  const closeMenu = () => setVisible(false);
-
   useLayoutEffect(() => {
     navigation.setOptions({
-      headerRight: () => (<Menu
-        visible={visible}
-        onDismiss={closeMenu}
-        anchor={<Ionicons name={'ellipsis-vertical'} size={24} onPress={openMenu} style={styles.icon}/>}>
-        <Menu.Item onPress={() => {
-        }} title="Oznacz do usunięcia"/>
-        <Menu.Item onPress={() => {
-        }} title="Dodaj komentarz"/>
-      </Menu>)
+      headerRight: () => (<><Text size='small'>Get next on submit</Text><Checkbox status={autoNext} onPress={(e) => setAutoNext(autoNext === 'checked' ? 'unchecked' : 'checked')}/></>)
     })
   })
 
@@ -58,19 +45,14 @@ export default function Draw() {
 
   async function getNext() {
     try {
-      const response = await fetch(`${api}/cunei/${id}/next`, {method: 'GET'})
+      const response = await fetch(`${api}/cunei/next`, {
+        method: 'GET',
+        headers: {
+          "Authorization": `Bearer ${user?.token}`
+        }
+      })
       const data = await response.json()
-      router.setParams({id: (data.id).toString()})
-      return
-    } catch (e) {
-      console.log(e)
-    }
-  }
-
-  async function getPrevious() {
-    try {
-      const response = await fetch(`${api}/cunei/${id}/previous`, {method: 'GET'})
-      const data = await response.json()
+      console.log(data);
       router.setParams({id: (data.id).toString()})
       return
     } catch (e) {
@@ -82,7 +64,6 @@ export default function Draw() {
     try {
       const bounds = path.value.getBounds()
       path.value.offset(-bounds.x, -bounds.y)
-      console.log(path.value.toSVGString())
       const body = {
         cuneiId: cunei?.id,
         submission: path.value.toSVGString()
@@ -99,6 +80,8 @@ export default function Draw() {
     } catch (e) {
       console.log(e)
     }
+    if (autoNext === "checked")
+      await getNext()
   }
 
   function clear() {
@@ -109,11 +92,7 @@ export default function Draw() {
     <View style={styles.container}>
       {
         cunei ? <View>
-          <View style={{justifyContent: 'space-around', flexDirection: 'row', alignItems: 'center'}}>
-            <Ionicons onPress={getPrevious} name={'caret-back-circle'} style={styles.icon} size={24}/>
-            <Text size={'regular'} center>{cunei?.phonetic}</Text>
-            <Ionicons onPress={getNext} name={'caret-forward-circle'} style={styles.icon} size={24}/>
-          </View>
+          <Text size={'regular'} center>{cunei?.phonetic}</Text>
           <View>
             <Text size={'cuneiBig'} center>{cunei?.unicode}</Text>
           </View>

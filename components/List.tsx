@@ -1,33 +1,23 @@
-import {FlatList, View} from "react-native";
-import {api} from '@/api'
-import {useContext, useEffect, useState} from "react";
-import {Cunei} from '@/types'
+import { api } from '@/api';
 import CuneiListElement from "@/components/CuneiListElement";
-import {colors} from "@/styles";
-import {Searchbar} from "react-native-paper";
-import {ctxAuth} from "@/utils/AuthContext";
-import Button from "@/components/Button";
+import { colors } from "@/styles";
+import { Cunei } from '@/types';
+import { ctxAuth } from "@/utils/AuthContext";
+import { useContext, useEffect, useState } from "react";
+import { FlatList, View } from "react-native";
+import { Searchbar } from "react-native-paper";
 
-type Sort = "user" | "all" | "alphabetically"
-
-const sortFunc: Record<Sort, (a: Cunei, b: Cunei) => number> = {
-  "user": (a: Cunei, b: Cunei) => {
+const sort = (a: Cunei, b: Cunei) => {
     const prim = a.user_count - b.user_count
-    return prim !== 0 ? prim : a.total_count - b.total_count
-  },
-  "all": (a: Cunei, b: Cunei) => {
-    const prim = a.total_count - b.total_count
-    return prim !== 0 ? prim : a.user_count - b.user_count
-  },
-  "alphabetically": (a: Cunei, b: Cunei) => a.phonetic.localeCompare(b.phonetic)
-}
+    const sec = a.total_count - b.total_count
+    return prim !== 0 ? prim : sec !== 0 ? sec : Math.random() - 0.5
+  }
 export default function List({admin = false}) {
   const [cunei, setCunei] = useState<Cunei[]>([])
   const [cuneiFiltered, setCuneiFiltered] = useState<Cunei[]>([])
   const [cuneiSorted, setCuneiSorted] = useState<Cunei[]>([])
   const [searchQuery, setSearchQuery] = useState('');
   const {user} = useContext(ctxAuth)
-  const [sort, setSort] = useState<Sort>("alphabetically")
   const [refreshing, setRefreshing] = useState<boolean>(false)
 
   useEffect(() => {
@@ -43,9 +33,9 @@ export default function List({admin = false}) {
   }, [searchQuery])
 
   useEffect(() => {
-    const sorted = [...cuneiFiltered].sort(sortFunc[sort])
+    const sorted = [...cuneiFiltered].sort(sort)
     setCuneiSorted(sorted)
-  }, [sort, cuneiFiltered])
+  }, [cuneiFiltered])
 
   function normalizeText(str: string) {
     return str
@@ -75,15 +65,6 @@ export default function List({admin = false}) {
     setRefreshing(false)
   }
 
-  const sortPanel = (
-    <View style={{flexDirection: 'row'}}>
-      <Button type={sort === "alphabetically" ? "primary" : "secondary"} text={'Alfabetycznie'}
-              onPress={() => setSort("alphabetically")}/>
-      <Button type={sort === "user" ? "primary" : "secondary"} text={'Twoje'} onPress={() => setSort("user")}/>
-      <Button type={sort === "all" ? "primary" : "secondary"} text={'Wszystkie'} onPress={() => setSort("all")}/>
-    </View>
-  )
-
   return <View style={{backgroundColor: colors.background, height: '100%'}}>
     <Searchbar
       placeholder="Search"
@@ -95,7 +76,6 @@ export default function List({admin = false}) {
       data={cuneiSorted}
       keyExtractor={(item) => item.id.toString()}
       renderItem={({item}) => <CuneiListElement cunei={item} admin={admin}/>}
-      ListHeaderComponent={sortPanel}
       refreshing={refreshing}
       onRefresh={fetchCunei}
     />
