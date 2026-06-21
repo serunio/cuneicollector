@@ -1,3 +1,8 @@
+import { api } from "@/api";
+import { colors } from "@/styles";
+import { JWT, User } from '@/types';
+import { ctxAuth } from "@/utils/AuthContext";
+import { getAuth, getIdToken, GoogleAuthProvider, signInWithCredential } from '@react-native-firebase/auth';
 import {
   GoogleSignin,
   GoogleSigninButton,
@@ -5,14 +10,9 @@ import {
   isSuccessResponse,
   statusCodes,
 } from '@react-native-google-signin/google-signin';
-import {useContext} from "react";
-import {StyleSheet, View} from "react-native";
-import {colors} from "@/styles";
-import {ctxAuth} from "@/utils/AuthContext";
-import {api} from "@/api";
-import {getAuth, getIdToken, GoogleAuthProvider, signInWithCredential} from '@react-native-firebase/auth'
-import {jwtDecode} from 'jwt-decode'
-import {JWT, User} from '@/types'
+import { jwtDecode } from 'jwt-decode';
+import { useContext } from "react";
+import { StyleSheet, View } from "react-native";
 
 export default function Login() {
   const {user, setUser} = useContext(ctxAuth)
@@ -22,10 +22,11 @@ export default function Login() {
 
   GoogleSignin.configure({webClientId: process.env.EXPO_PUBLIC_WEB_CLIENT_ID});
   const signIn = async () => {
+    setUser(null)
+    GoogleSignin.signOut();
     try {
       await GoogleSignin.hasPlayServices();
       const response = await GoogleSignin.signIn();
-
       if (isSuccessResponse(response)) {
         const auth = getAuth();
         const credential = GoogleAuthProvider.credential(response.data.idToken);
@@ -36,16 +37,23 @@ export default function Login() {
             "Authorization": "Bearer " + firebaseIdToken
           }
         })
-        const token = await res.text()
-        const decoded = jwtDecode<JWT>(token)
-        const user:User = {
-          admin: decoded.admin === 1,
-          name: decoded.name,
-          email: decoded.email,
-          uid: decoded.uid,
-          token: token
+        if (res.ok) {
+          const token = await res.text()
+          const decoded = jwtDecode<JWT>(token)
+          const user:User = {
+            admin: decoded.admin,
+            name: decoded.name,
+            email: decoded.email,
+            uid: decoded.uid,
+            token: token
+          }
+          setUser(user);
         }
-        setUser(user);
+        else {
+          console.log("Login failed")
+          console.log(await res.text())
+        }
+        
       } else {
         // sign in was cancelled by user
       }
