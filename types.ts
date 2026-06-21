@@ -1,4 +1,4 @@
-import {JwtPayload} from 'jwt-decode'
+import { JwtPayload } from 'jwt-decode'
 
 export type Cunei = {
   id: number,
@@ -11,7 +11,7 @@ export type Cunei = {
 }
 
 export interface JWT extends JwtPayload {
-  admin: number,
+  admin: boolean,
   email: string,
   name: string,
   uid: string
