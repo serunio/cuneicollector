@@ -1,12 +1,12 @@
-import {Pressable, StyleSheet, View} from "react-native";
-import {Cunei} from "@/types";
-import Text from "@/components/Text";
-import {colors} from '@/styles'
-import {Link} from "expo-router";
-import {api} from "@/api";
+import { api } from "@/api";
 import Button from "@/components/Button";
-import {useContext} from "react";
-import {ctxAuth} from "@/utils/AuthContext";
+import Text from "@/components/Text";
+import { colors } from '@/styles';
+import { Cunei } from "@/types";
+import { ctxAuth } from "@/utils/AuthContext";
+import { Link } from "expo-router";
+import { useContext } from "react";
+import { Pressable, StyleSheet, View } from "react-native";
 
 export default function CuneiListElement({cunei, admin=false}: { cunei: Cunei, admin?: boolean }) {
 
@@ -39,11 +39,11 @@ export default function CuneiListElement({cunei, admin=false}: { cunei: Cunei, a
   const numbers =
     (<View>
     <View style={{flexDirection: 'row'}}>
-      <Text size={'small'}>Twoje próbki: </Text>
+      <Text size={'small'}>Your submissions: </Text>
       <Text size={'small'}>{cunei.user_count}/50</Text>
     </View>
     <View style={{flexDirection: 'row'}}>
-      <Text size={'small'}>Wszystkie próbki: </Text>
+      <Text size={'small'}>All submissions: </Text>
       <Text size={'small'}>{cunei.total_count}</Text>
     </View>
   </View>)
