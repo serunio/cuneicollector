@@ -123,8 +123,8 @@ export default function Draw() {
         <Tablet path={path}/>
       </View>
       <View style={{flex: 2, flexDirection: 'row', gap: 10,}}>
-        <Button onPress={clear} type={"secondary"} text={'Wyczyść'}/>
-        <Button onPress={sendSubmission} type={"primary"} text={'Zatwierdź'}/>
+        <Button onPress={clear} type={"secondary"} text={'Clear'}/>
+        <Button onPress={sendSubmission} type={"primary"} text={'Submit'}/>
       </View>
     </View>
   );

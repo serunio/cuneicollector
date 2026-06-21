@@ -12,7 +12,7 @@ export default function TabsLayout() {
 
         <NativeTabs.Trigger name={'list'}>
           <NativeTabs.Trigger.Label>
-            Znaki
+            Cunei
           </NativeTabs.Trigger.Label>
         </NativeTabs.Trigger>
 
