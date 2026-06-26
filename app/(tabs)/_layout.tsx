@@ -14,6 +14,7 @@ export default function TabsLayout() {
           <NativeTabs.Trigger.Label>
             Cunei
           </NativeTabs.Trigger.Label>
+          {/* <NativeTabs.Trigger.Icon sf="pencil" md="stylus"/> */}
         </NativeTabs.Trigger>
 
         <NativeTabs.Trigger hidden={!user?.admin} name={'edit'}>
@@ -32,6 +33,7 @@ export default function TabsLayout() {
           <NativeTabs.Trigger.Label>
             User
           </NativeTabs.Trigger.Label>
+          {/* <NativeTabs.Trigger.Icon sf="person" md="person"/> */}
         </NativeTabs.Trigger>
 
       </NativeTabs>
