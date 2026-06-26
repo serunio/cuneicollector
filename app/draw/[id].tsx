@@ -2,10 +2,11 @@ import { api } from '@/api';
 import { colors } from '@/styles';
 import { Cunei } from "@/types";
 import { ctxAuth } from "@/utils/AuthContext";
+import { Ionicons } from "@expo/vector-icons";
 import { Skia } from "@shopify/react-native-skia";
 import { router, useLocalSearchParams, useNavigation } from "expo-router";
 import React, { useContext, useEffect, useLayoutEffect, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Image, Modal, StyleSheet, View } from 'react-native';
 import { Checkbox } from "react-native-paper";
 import { useSharedValue } from "react-native-reanimated";
 import Button from '../../components/Button';
@@ -23,9 +24,12 @@ export default function Draw() {
 
   const {user} = useContext(ctxAuth)
 
+  const [modalVisible, setModalVisible] = useState(user?.isNew);
+
   useLayoutEffect(() => {
     navigation.setOptions({
-      headerRight: () => (<><Text size='small'>Get next on submit</Text><Checkbox status={autoNext} onPress={(e) => setAutoNext(autoNext === 'checked' ? 'unchecked' : 'checked')}/></>)
+      headerRight: () => (<><Text size='small'>Get next on submit</Text><Checkbox status={autoNext} onPress={(e) => setAutoNext(autoNext === 'checked' ? 'unchecked' : 'checked')}/>
+      <Ionicons name={'information-circle-outline'} size={24} onPress={() => setModalVisible(true)} style={styles.icon}/></>)
     })
   })
 
@@ -89,6 +93,28 @@ export default function Draw() {
   }
 
   return (
+    <>
+    <Modal
+      animationType="slide"
+      transparent={true}
+      visible={modalVisible}
+      onRequestClose={() => {
+        setModalVisible(!modalVisible);
+      }}>
+      <View style={styles.centeredView}>
+        <View style={styles.modalView}>
+          <View style={{flex: 10}}>
+            <Text size={'regular'} center>Examples:</Text>
+            <Image source={require('@/assets/images/instruction.gif')} style={{height: "80%", width: "90%", alignSelf: "center"}} resizeMode='contain'/>
+            <Text size={'regular'} center>Mind the drawing direction</Text>
+          </View>
+          
+          <View style={{flex: 1, padding: 10}}>
+            <Button type={"primary"} text='Close' onPress={() => setModalVisible(false)}/>
+          </View>
+        </View>
+      </View>
+    </Modal>
     <View style={styles.container}>
       {
         cunei ? <View>
@@ -96,7 +122,7 @@ export default function Draw() {
           <View>
             <Text size={'cuneiBig'} center>{cunei?.unicode}</Text>
           </View>
-        </View> : <><Text size={'regular'}>error</Text></>
+        </View> : <><Text size={'regular'}>Loading...</Text></>
       }
       <View style={{flex: 15}}>
         <Tablet path={path}/>
@@ -106,6 +132,8 @@ export default function Draw() {
         <Button onPress={sendSubmission} type={"primary"} text={'Submit'}/>
       </View>
     </View>
+    </>
+    
   );
 }
 
@@ -120,5 +148,24 @@ const styles = StyleSheet.create({
   },
   icon: {
     color: colors.stroke
-  }
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalView: {
+    width: "85%",
+    flex: 1,
+    marginTop: 110,
+    marginBottom: 70,
+    backgroundColor: colors.background,
+    borderRadius: 20,
+    // padding: 30,
+    // alignItems: 'center',
+    borderColor: colors.stroke,
+    borderWidth: 3,
+    elevation: 5,
+    // opacity: 0.9
+  },
 });

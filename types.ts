@@ -14,7 +14,8 @@ export interface JWT extends JwtPayload {
   admin: boolean,
   email: string,
   name: string,
-  uid: string
+  uid: string,
+  isNew: boolean
 }
 
 export type User = {
@@ -22,5 +23,6 @@ export type User = {
   email: string,
   name: string,
   uid: string,
-  token: string
+  token: string,
+  isNew: boolean
 }

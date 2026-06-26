@@ -1,4 +1,5 @@
 import { api } from "@/api";
+import Text from '@/components/Text';
 import { colors } from "@/styles";
 import { JWT, User } from '@/types';
 import { ctxAuth } from "@/utils/AuthContext";
@@ -11,11 +12,12 @@ import {
   statusCodes,
 } from '@react-native-google-signin/google-signin';
 import { jwtDecode } from 'jwt-decode';
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { StyleSheet, View } from "react-native";
 
 export default function Login() {
   const {user, setUser} = useContext(ctxAuth)
+  const [loading, setLoading] = useState<boolean>(false)
 
   if(setUser === null)
     return <></>
@@ -23,6 +25,7 @@ export default function Login() {
   GoogleSignin.configure({webClientId: process.env.EXPO_PUBLIC_WEB_CLIENT_ID});
   const signIn = async () => {
     setUser(null)
+    setLoading(true)
     GoogleSignin.signOut();
     try {
       await GoogleSignin.hasPlayServices();
@@ -45,8 +48,10 @@ export default function Login() {
             name: decoded.name,
             email: decoded.email,
             uid: decoded.uid,
-            token: token
+            token: token,
+            isNew: decoded.isNew
           }
+          console.log(user)
           setUser(user);
         }
         else {
@@ -75,6 +80,7 @@ export default function Login() {
         // an error that's not related to google sign in occurred
       }
     }
+    setLoading(false)
   };
 
 
@@ -82,6 +88,7 @@ export default function Login() {
   return <>
     <View style={styles.background}>
       <GoogleSigninButton onPress={signIn}/>
+      <Text size='regular'>{loading ? "Loading..." : ""}</Text>
     </View>
   </>;
 }
@@ -91,6 +98,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.background,
     alignItems: 'center',
-    padding: '40%'
+    paddingTop: '40%'
   }
 })
