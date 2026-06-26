@@ -7,7 +7,6 @@
     "icon": "./assets/images/icon.png",
     "scheme": "cuneicollector",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
     "ios": {
       "googleServicesFile": "./GoogleService-Info.plist",
       "supportsTablet": true,
@@ -24,7 +23,6 @@
         "backgroundImage": "./assets/images/android-icon-background.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
-      "edgeToEdgeEnabled": true,
       "package": "com.anonymous.cuneicollector"
     },
     "web": {
