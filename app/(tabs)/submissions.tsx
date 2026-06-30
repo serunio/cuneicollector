@@ -1,18 +1,40 @@
 import { api } from "@/api";
+import Button from "@/components/Button";
 import Text from "@/components/Text";
 import { colors } from "@/styles";
 import { ctxAuth } from "@/utils/AuthContext";
 import { Canvas, Path, Skia } from "@shopify/react-native-skia";
 import React, { useContext, useEffect, useState } from "react";
 import { FlatList, StyleSheet, View } from "react-native";
+import { Searchbar } from "react-native-paper";
 
-type Submission = { id: number, user_id: string, data: string, unicode:string }
+type Submission = { id: number, user_id: string, name: string, email: string, data: string, unicode:string, phonetic: string, timestamp: string }
 export default function Submissions() {
   const [submissions, setSubmissions] = useState<Submission[]>([])
+  const [filtered, setFiltered] = useState<Submission[]>([])
+  const [sorted, setSorted] = useState<Submission[]>([])
   const [refreshing, setRefreshing] = useState<boolean>(false)
+  const [searchQuery, setSearchQuery] = useState<string>('')
+
   useEffect(() => {
     fetchSubmissions()
   }, [])
+
+  useEffect(() => {
+    setFiltered(submissions.filter((c) => normalizeText(c.phonetic).startsWith(normalizeText(searchQuery))))
+  }, [searchQuery, submissions])
+
+  useEffect(() => {
+    setSorted([...filtered].sort((a, b) => new Date(b.timestamp).valueOf() - new Date(a.timestamp).valueOf()))
+  }, [filtered])
+
+
+  function normalizeText(str: string) {
+    return str
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .toUpperCase();
+  }
 
   const {user} = useContext(ctxAuth)
 
@@ -33,10 +55,15 @@ export default function Submissions() {
   }
 
   return <View style={{backgroundColor: colors.background}}>
+    <Searchbar
+      placeholder="Search"
+      onChangeText={setSearchQuery}
+      value={searchQuery}
+    />
       <FlatList
         refreshing={refreshing}
         onRefresh={fetchSubmissions}
-        data={submissions}
+        data={sorted}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => <SubmissionItem item={item}/>}
       />
@@ -53,6 +80,8 @@ function SubmissionItem({ item }: { item: Submission }) {
 
   const bounds = path.getBounds()
   const size = 100
+
+  const date = new Date(item.timestamp)
 
   const scale = Math.min(size/(bounds.width + 100), size/(bounds.height + 100))
   // console.log(item.id)
@@ -79,10 +108,36 @@ function SubmissionItem({ item }: { item: Submission }) {
         </Canvas>
       </View>
 
-      <View style={{ justifyContent: 'center', width: size, flex: 1}}>
-        <Text size={'cuneiSmall'} center>
-          {item.unicode}
-        </Text>
+      <View style={{ justifyContent: 'space-between', flex: 1, flexDirection: "row"}}>
+        <View style={{flexDirection: "column", justifyContent: 'center', width: 70}}>
+          <Text size={'cuneiSmall'} center>
+            {item.unicode}
+          </Text>
+          <Text size={'small'} center>
+            {item.phonetic}
+          </Text>
+        </View>
+        
+        <View style={{flexDirection: "column", justifyContent: 'center', flex: 3}}>
+          <Text size={'small'} center>
+            {item.name }
+          </Text>
+          <Text size={'small'} center>
+            {item.email }
+          </Text>
+          <Text size={'small'} center>
+            {date.toDateString()}
+          </Text>
+          <Text size={'small'} center>
+            {date.toLocaleTimeString()}
+          </Text>
+          
+        </View>
+        <View style={{flex: 1}}>
+          <Button type="primary" onPress={() => {}} text="Block"/>
+        </View>
+        
+        
       </View>
 
     </View>
@@ -97,6 +152,7 @@ const styles = StyleSheet.create({
     borderColor: colors.background,
     borderBottomColor: colors.gray,
     borderStyle: 'solid',
-    borderWidth: 2
+    borderWidth: 2,
+    gap: 5
   }
 })

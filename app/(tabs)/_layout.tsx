@@ -17,6 +17,12 @@ export default function TabsLayout() {
           {/* <NativeTabs.Trigger.Icon sf="pencil" md="stylus"/> */}
         </NativeTabs.Trigger>
 
+        <NativeTabs.Trigger name={'guesser'}>
+          <NativeTabs.Trigger.Label>
+            Guesser
+          </NativeTabs.Trigger.Label>
+        </NativeTabs.Trigger>
+
         <NativeTabs.Trigger hidden={!user?.admin} name={'edit'}>
           <NativeTabs.Trigger.Label>
             Edit
@@ -41,4 +47,3 @@ export default function TabsLayout() {
 
   </>
 }
-
